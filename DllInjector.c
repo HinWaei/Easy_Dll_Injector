@@ -1,3 +1,7 @@
+/*
+Written by: Hinux Chau
+Description: Injecting DLL to Target process using Process Id or Process name
+*/
 #include <windows.h>
 #include <stdio.h>
 #include <tlhelp32.h>

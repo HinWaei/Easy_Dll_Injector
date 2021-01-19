@@ -1,5 +1,5 @@
+
 #include <windows.h>
-#pragma 
 
 BOOL WINAPI DllMain(
     HINSTANCE hinstDLL,  // handle to DLL module
