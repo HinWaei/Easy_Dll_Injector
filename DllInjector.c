@@ -46,6 +46,7 @@ BOOL SetPrivilege(void)
         printf("AdjustTokenPrivileges error: %u\n", GetLastError());
         return FALSE;
     }
+    return TRUE;
 }
 
 //Get PID by name of the process
@@ -91,7 +92,7 @@ BOOL Inject(
     int len=strlen(pszPathOfDll),wlen;
     HANDLE hProcess=OpenProcess(PROCESS_CREATE_THREAD|PROCESS_VM_READ|PROCESS_VM_WRITE|PROCESS_VM_OPERATION|PROCESS_QUERY_INFORMATION,FALSE,pid);
     if(!hProcess){
-        printf("OpenProcess Failed!");
+        printf("OpenProcess Failed! %d",GetLastError());
         return FALSE;
     }
     printf("Process Handle:%#x\n",hProcess);
@@ -104,6 +105,7 @@ BOOL Inject(
     }
     printf("Remote Space:%#x\n",lpRemoteDllName);
     WriteProcessMemory(hProcess,lpRemoteDllName,(LPCVOID)pszPathOfDll,len,(SIZE_T*)&wlen);
+    printf("wlen=%d,len=%d\n",wlen,len);
     if(wlen!=len){
         printf("wlen!=len!");
         return FALSE;
@@ -119,6 +121,8 @@ BOOL Inject(
         printf("CreateRemoteThread Error! %d",GetLastError());
         return FALSE;
     }
+    DWORD tid=GetThreadId(hRemoteThread);
+    printf("hRemoteThread=%#x\ntid=%#x\n",hRemoteThread,tid);
     WaitForSingleObject(hRemoteThread,INFINITE);
     VirtualFreeEx(hProcess,lpRemoteDllName,(DWORD)(len*sizeof(char)),MEM_DECOMMIT);
     CloseHandle(hRemoteThread);
